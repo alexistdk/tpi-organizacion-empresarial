@@ -1,0 +1,13 @@
+# Variables de entorno con datos sensibles (token del bot)
+.env
+
+# Base de datos SQLite (se genera localmente, no se versiona)
+*.db
+
+# Archivos generados por Python
+__pycache__/
+*.pyc
+
+# Entornos virtuales
+.venv/
+venv/
