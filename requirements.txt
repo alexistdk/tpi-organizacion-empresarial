@@ -1,0 +1,7 @@
+# Dependencias del proyecto
+# ---------------------------------------------------------------------
+# Librería para el bot de Telegram (manejo de comandos, conversaciones, etc.)
+python-telegram-bot>=21,<22
+
+# NOTA: La persistencia usa sqlite3, que forma parte de la biblioteca
+# estándar de Python (stdlib). No requiere instalación adicional.
