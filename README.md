@@ -7,7 +7,7 @@ Recursos Humanos, modelado en **BPMN 2.0**, con **máquina de estados** y
 - **Autor:** Alexis Delgado (trabajo individual).
 - **Asignatura:** Organización Empresarial — Trabajo Práctico Integrador (TPI).
 - **Institución:** UTN — Tecnicatura Universitaria en Programación a Distancia.
-- **Repositorio:** `<URL_DEL_REPO>` (a completar por el autor).
+- **Repositorio:** https://github.com/alexistdk/tpi-organizacion-empresarial
 
 ---
 
@@ -93,7 +93,7 @@ tpi-organizacion-empresarial/
 ### 1. Clonar el repositorio
 
 ```bash
-git clone <URL_DEL_REPO>
+git clone https://github.com/alexistdk/tpi-organizacion-empresarial.git
 cd tpi-organizacion-empresarial
 ```
 
@@ -263,4 +263,4 @@ encuentren `data/schema.sql` y `data/seed.sql`.
 
 ## Repositorio
 
-`<URL_DEL_REPO>` (a completar por el autor).
+https://github.com/alexistdk/tpi-organizacion-empresarial
