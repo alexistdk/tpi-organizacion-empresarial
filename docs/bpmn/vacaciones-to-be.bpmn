@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="Definitions_ToBe"
+                  targetNamespace="http://bpmn.io/schema/bpmn"
+                  exporter="Claude Code" exporterVersion="1.0">
+  <bpmn:collaboration id="Collaboration_ToBe">
+    <bpmn:participant id="Participant_ToBe" name="Gestion de Vacaciones (TO-BE - Chatbot)" processRef="Process_ToBe" />
+  </bpmn:collaboration>
+  <bpmn:process id="Process_ToBe" isExecutable="false">
+    <bpmn:laneSet id="LaneSet_ToBe">
+      <bpmn:lane id="Lane_Usuario" name="Empleado (Usuario)">
+        <bpmn:flowNodeRef>StartEvent_ToBe</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_IngresarLegajo</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_IngresarFechas</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Bot" name="Bot (Sistema)">
+        <bpmn:flowNodeRef>Task_PedirLegajo</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ValidarLegajo</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_Legajo</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ConsultarSaldo</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ValidarFechas</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_FechasValidas</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_CalcularDias</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_Saldo</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_InformarRechazo</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_Aprobacion</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_AprobacionAutomatica</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_RechazoSaldo</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_Aprobado</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_NoEncontrado</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_JefeRRHH" name="Jefe / RRHH">
+        <bpmn:flowNodeRef>Task_DerivarJefe</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_Pendiente</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="StartEvent_ToBe" name="Comando /start o /vacaciones">
+      <bpmn:outgoing>F01</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="Task_PedirLegajo" name="Bot solicita el legajo">
+      <bpmn:incoming>F01</bpmn:incoming>
+      <bpmn:outgoing>F02</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:userTask id="Task_IngresarLegajo" name="Usuario ingresa su legajo">
+      <bpmn:incoming>F02</bpmn:incoming>
+      <bpmn:outgoing>F03</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="Task_ValidarLegajo" name="Validar legajo contra la base de datos">
+      <bpmn:incoming>F03</bpmn:incoming>
+      <bpmn:outgoing>F04</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Gateway_Legajo" name="Legajo existe?">
+      <bpmn:incoming>F04</bpmn:incoming>
+      <bpmn:outgoing>F_LegajoSi</bpmn:outgoing>
+      <bpmn:outgoing>F_LegajoNo</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="Task_ConsultarSaldo" name="Consultar y mostrar saldo de dias">
+      <bpmn:incoming>F_LegajoSi</bpmn:incoming>
+      <bpmn:outgoing>F05</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:userTask id="Task_IngresarFechas" name="Usuario ingresa fecha desde y fecha hasta">
+      <bpmn:incoming>F05</bpmn:incoming>
+      <bpmn:incoming>F_FechasNo</bpmn:incoming>
+      <bpmn:outgoing>F06</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="Task_ValidarFechas" name="Validar formato, orden y fecha no pasada">
+      <bpmn:incoming>F06</bpmn:incoming>
+      <bpmn:outgoing>F07</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Gateway_FechasValidas" name="Fechas validas?">
+      <bpmn:incoming>F07</bpmn:incoming>
+      <bpmn:outgoing>F_FechasSi</bpmn:outgoing>
+      <bpmn:outgoing>F_FechasNo</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="Task_CalcularDias" name="Calcular dias solicitados">
+      <bpmn:incoming>F_FechasSi</bpmn:incoming>
+      <bpmn:outgoing>F08</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Gateway_Saldo" name="Saldo suficiente?">
+      <bpmn:incoming>F08</bpmn:incoming>
+      <bpmn:outgoing>F_SaldoSi</bpmn:outgoing>
+      <bpmn:outgoing>F_SaldoNo</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="Task_InformarRechazo" name="Informar saldo insuficiente y rechazar">
+      <bpmn:incoming>F_SaldoNo</bpmn:incoming>
+      <bpmn:outgoing>F_AlRechazoFin</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Gateway_Aprobacion" name="Requiere aprobacion del jefe? (dias > 10)">
+      <bpmn:incoming>F_SaldoSi</bpmn:incoming>
+      <bpmn:outgoing>F_AprobSi</bpmn:outgoing>
+      <bpmn:outgoing>F_AprobNo</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="Task_DerivarJefe" name="Estado PENDIENTE_APROBACION y derivar al jefe (simulado)">
+      <bpmn:incoming>F_AprobSi</bpmn:incoming>
+      <bpmn:outgoing>F_AlPendienteFin</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_AprobacionAutomatica" name="Aprobacion automatica: descontar saldo y registrar solicitud">
+      <bpmn:incoming>F_AprobNo</bpmn:incoming>
+      <bpmn:outgoing>F_AlAprobadoFin</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="EndEvent_NoEncontrado" name="Fin: legajo inexistente">
+      <bpmn:incoming>F_LegajoNo</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="EndEvent_RechazoSaldo" name="Fin: rechazada por saldo">
+      <bpmn:incoming>F_AlRechazoFin</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="EndEvent_Pendiente" name="Fin: pendiente de aprobacion del jefe">
+      <bpmn:incoming>F_AlPendienteFin</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="EndEvent_Aprobado" name="Fin: solicitud aprobada y confirmada">
+      <bpmn:incoming>F_AlAprobadoFin</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="F01" sourceRef="StartEvent_ToBe" targetRef="Task_PedirLegajo" />
+    <bpmn:sequenceFlow id="F02" sourceRef="Task_PedirLegajo" targetRef="Task_IngresarLegajo" />
+    <bpmn:sequenceFlow id="F03" sourceRef="Task_IngresarLegajo" targetRef="Task_ValidarLegajo" />
+    <bpmn:sequenceFlow id="F04" sourceRef="Task_ValidarLegajo" targetRef="Gateway_Legajo" />
+    <bpmn:sequenceFlow id="F_LegajoSi" name="Si" sourceRef="Gateway_Legajo" targetRef="Task_ConsultarSaldo" />
+    <bpmn:sequenceFlow id="F_LegajoNo" name="No (vuelve a pedir)" sourceRef="Gateway_Legajo" targetRef="EndEvent_NoEncontrado" />
+    <bpmn:sequenceFlow id="F05" sourceRef="Task_ConsultarSaldo" targetRef="Task_IngresarFechas" />
+    <bpmn:sequenceFlow id="F06" sourceRef="Task_IngresarFechas" targetRef="Task_ValidarFechas" />
+    <bpmn:sequenceFlow id="F07" sourceRef="Task_ValidarFechas" targetRef="Gateway_FechasValidas" />
+    <bpmn:sequenceFlow id="F_FechasSi" name="Si" sourceRef="Gateway_FechasValidas" targetRef="Task_CalcularDias" />
+    <bpmn:sequenceFlow id="F_FechasNo" name="No (reingresar fechas)" sourceRef="Gateway_FechasValidas" targetRef="Task_IngresarFechas" />
+    <bpmn:sequenceFlow id="F08" sourceRef="Task_CalcularDias" targetRef="Gateway_Saldo" />
+    <bpmn:sequenceFlow id="F_SaldoSi" name="Si" sourceRef="Gateway_Saldo" targetRef="Gateway_Aprobacion" />
+    <bpmn:sequenceFlow id="F_SaldoNo" name="No" sourceRef="Gateway_Saldo" targetRef="Task_InformarRechazo" />
+    <bpmn:sequenceFlow id="F_AlRechazoFin" sourceRef="Task_InformarRechazo" targetRef="EndEvent_RechazoSaldo" />
+    <bpmn:sequenceFlow id="F_AprobSi" name="Si (dias > 10)" sourceRef="Gateway_Aprobacion" targetRef="Task_DerivarJefe" />
+    <bpmn:sequenceFlow id="F_AprobNo" name="No (dias &lt;= 10)" sourceRef="Gateway_Aprobacion" targetRef="Task_AprobacionAutomatica" />
+    <bpmn:sequenceFlow id="F_AlPendienteFin" sourceRef="Task_DerivarJefe" targetRef="EndEvent_Pendiente" />
+    <bpmn:sequenceFlow id="F_AlAprobadoFin" sourceRef="Task_AprobacionAutomatica" targetRef="EndEvent_Aprobado" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_ToBe">
+    <bpmndi:BPMNPlane id="BPMNPlane_ToBe" bpmnElement="Collaboration_ToBe">
+      <bpmndi:BPMNShape id="Participant_ToBe_di" bpmnElement="Participant_ToBe" isHorizontal="true">
+        <dc:Bounds x="120" y="60" width="2480" height="540" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Usuario_di" bpmnElement="Lane_Usuario" isHorizontal="true">
+        <dc:Bounds x="150" y="60" width="2450" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Bot_di" bpmnElement="Lane_Bot" isHorizontal="true">
+        <dc:Bounds x="150" y="220" width="2450" height="240" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_JefeRRHH_di" bpmnElement="Lane_JefeRRHH" isHorizontal="true">
+        <dc:Bounds x="150" y="460" width="2450" height="140" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_ToBe_di" bpmnElement="StartEvent_ToBe">
+        <dc:Bounds x="202" y="112" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="180" y="155" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_PedirLegajo_di" bpmnElement="Task_PedirLegajo">
+        <dc:Bounds x="290" y="280" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_IngresarLegajo_di" bpmnElement="Task_IngresarLegajo">
+        <dc:Bounds x="290" y="90" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ValidarLegajo_di" bpmnElement="Task_ValidarLegajo">
+        <dc:Bounds x="460" y="280" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Legajo_di" bpmnElement="Gateway_Legajo" isMarkerVisible="true">
+        <dc:Bounds x="635" y="295" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="625" y="352" width="70" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_NoEncontrado_di" bpmnElement="EndEvent_NoEncontrado">
+        <dc:Bounds x="642" y="402" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="618" y="442" width="84" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ConsultarSaldo_di" bpmnElement="Task_ConsultarSaldo">
+        <dc:Bounds x="740" y="280" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_IngresarFechas_di" bpmnElement="Task_IngresarFechas">
+        <dc:Bounds x="740" y="90" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ValidarFechas_di" bpmnElement="Task_ValidarFechas">
+        <dc:Bounds x="910" y="280" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_FechasValidas_di" bpmnElement="Gateway_FechasValidas" isMarkerVisible="true">
+        <dc:Bounds x="1085" y="295" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1075" y="352" width="70" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_CalcularDias_di" bpmnElement="Task_CalcularDias">
+        <dc:Bounds x="1190" y="280" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Saldo_di" bpmnElement="Gateway_Saldo" isMarkerVisible="true">
+        <dc:Bounds x="1365" y="295" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1352" y="352" width="76" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_InformarRechazo_di" bpmnElement="Task_InformarRechazo">
+        <dc:Bounds x="1340" y="170" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_RechazoSaldo_di" bpmnElement="EndEvent_RechazoSaldo">
+        <dc:Bounds x="1382" y="100" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1360" y="76" width="84" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Aprobacion_di" bpmnElement="Gateway_Aprobacion" isMarkerVisible="true">
+        <dc:Bounds x="1565" y="295" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1545" y="352" width="92" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_AprobacionAutomatica_di" bpmnElement="Task_AprobacionAutomatica">
+        <dc:Bounds x="1750" y="280" width="140" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_Aprobado_di" bpmnElement="EndEvent_Aprobado">
+        <dc:Bounds x="1952" y="302" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1928" y="342" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_DerivarJefe_di" bpmnElement="Task_DerivarJefe">
+        <dc:Bounds x="1750" y="490" width="140" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_Pendiente_di" bpmnElement="EndEvent_Pendiente">
+        <dc:Bounds x="1952" y="512" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1928" y="552" width="90" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="F01_di" bpmnElement="F01">
+        <di:waypoint x="220" y="148" />
+        <di:waypoint x="220" y="320" />
+        <di:waypoint x="290" y="320" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F02_di" bpmnElement="F02">
+        <di:waypoint x="350" y="280" />
+        <di:waypoint x="350" y="170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F03_di" bpmnElement="F03">
+        <di:waypoint x="410" y="130" />
+        <di:waypoint x="520" y="130" />
+        <di:waypoint x="520" y="280" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F04_di" bpmnElement="F04">
+        <di:waypoint x="580" y="320" />
+        <di:waypoint x="635" y="320" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_LegajoSi_di" bpmnElement="F_LegajoSi">
+        <di:waypoint x="685" y="320" />
+        <di:waypoint x="740" y="320" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="700" y="302" width="20" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_LegajoNo_di" bpmnElement="F_LegajoNo">
+        <di:waypoint x="660" y="345" />
+        <di:waypoint x="660" y="402" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="668" y="360" width="100" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F05_di" bpmnElement="F05">
+        <di:waypoint x="800" y="280" />
+        <di:waypoint x="800" y="170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F06_di" bpmnElement="F06">
+        <di:waypoint x="860" y="130" />
+        <di:waypoint x="970" y="130" />
+        <di:waypoint x="970" y="280" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F07_di" bpmnElement="F07">
+        <di:waypoint x="1030" y="320" />
+        <di:waypoint x="1085" y="320" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_FechasSi_di" bpmnElement="F_FechasSi">
+        <di:waypoint x="1135" y="320" />
+        <di:waypoint x="1190" y="320" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1150" y="302" width="20" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_FechasNo_di" bpmnElement="F_FechasNo">
+        <di:waypoint x="1110" y="295" />
+        <di:waypoint x="1110" y="200" />
+        <di:waypoint x="860" y="130" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="940" y="180" width="120" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F08_di" bpmnElement="F08">
+        <di:waypoint x="1310" y="320" />
+        <di:waypoint x="1365" y="320" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SaldoSi_di" bpmnElement="F_SaldoSi">
+        <di:waypoint x="1415" y="320" />
+        <di:waypoint x="1565" y="320" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1480" y="302" width="20" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_SaldoNo_di" bpmnElement="F_SaldoNo">
+        <di:waypoint x="1390" y="295" />
+        <di:waypoint x="1390" y="250" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1396" y="262" width="20" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_AlRechazoFin_di" bpmnElement="F_AlRechazoFin">
+        <di:waypoint x="1400" y="170" />
+        <di:waypoint x="1400" y="136" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_AprobNo_di" bpmnElement="F_AprobNo">
+        <di:waypoint x="1615" y="320" />
+        <di:waypoint x="1750" y="320" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1640" y="300" width="100" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_AlAprobadoFin_di" bpmnElement="F_AlAprobadoFin">
+        <di:waypoint x="1890" y="320" />
+        <di:waypoint x="1952" y="320" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_AprobSi_di" bpmnElement="F_AprobSi">
+        <di:waypoint x="1590" y="345" />
+        <di:waypoint x="1590" y="530" />
+        <di:waypoint x="1750" y="530" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1600" y="430" width="100" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="F_AlPendienteFin_di" bpmnElement="F_AlPendienteFin">
+        <di:waypoint x="1890" y="530" />
+        <di:waypoint x="1952" y="530" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

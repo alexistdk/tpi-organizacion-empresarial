@@ -1,0 +1,35 @@
+%% Proceso TO-BE: Gestion de Vacaciones automatizada con chatbot
+%% UTN - Organizacion Empresarial - TPI
+flowchart TD
+    start([Inicio: comando /start o /vacaciones]) --> pedirLegajo[Bot solicita el legajo]
+    pedirLegajo --> ingLegajo[/Usuario ingresa su legajo/]
+    ingLegajo --> validarLegajo[Validar legajo contra la base de datos]
+    validarLegajo --> gwLegajo{Legajo existe?}
+
+    gwLegajo -->|No| finNoLegajo([Fin: legajo inexistente])
+    gwLegajo -->|Si| consultarSaldo[Consultar y mostrar saldo de dias]
+
+    consultarSaldo --> ingFechas[/Usuario ingresa fecha desde y fecha hasta/]
+    ingFechas --> validarFechas[Validar formato, orden y fecha no pasada]
+    validarFechas --> gwFechas{Fechas validas?}
+
+    gwFechas -->|No| ingFechas
+    gwFechas -->|Si| calcularDias[Calcular dias solicitados]
+
+    calcularDias --> gwSaldo{¿saldo suficiente?}
+    gwSaldo -->|No| informarRechazo[Informar saldo insuficiente y rechazar]
+    informarRechazo --> finRechazo([Fin: rechazada por saldo])
+
+    gwSaldo -->|Si| gwAprob{¿dias > 10?}
+    gwAprob -->|Si| derivarJefe[Estado PENDIENTE_APROBACION y derivar al jefe simulado]
+    derivarJefe --> finPendiente([Fin: pendiente de aprobacion del jefe])
+
+    gwAprob -->|No| aprobAuto[Aprobacion automatica: descontar saldo y registrar solicitud]
+    aprobAuto --> finAprobado([Fin: solicitud aprobada y confirmada])
+
+    classDef gateway fill:#fde68a,stroke:#b45309,stroke-width:2px;
+    classDef fin fill:#bbf7d0,stroke:#15803d;
+    classDef finBad fill:#fecaca,stroke:#b91c1c;
+    class gwLegajo,gwFechas,gwSaldo,gwAprob gateway;
+    class finAprobado,finPendiente fin;
+    class finNoLegajo,finRechazo finBad;
